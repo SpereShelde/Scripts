@@ -146,18 +146,11 @@ add_urls(){
             echo " 请以Json格式输入此站点的Cookie:"
             read -e -d "]" -p  " (默认: 取消):"  cookie
             echo "$cookie]">BoxHelper/cookies/${domain[$n]}.json
-#            c=$(cat BoxHelper/cookies/${domain[$n]} | jq '.')
-#            $($c > BoxHelper/cookies/${domain[$n]}.json)
-#            $(rm -rf BoxHelper/cookies/${domain[$n]})
         fi
     else
         echo " 请以Json格式输入此站点的Cookie:"
         read -e -d "]" -p  " (默认: 取消):"  cookie
         [[ -z "${cookie}]" ]] && echo -e "已取消..." && exit 1
-        echo "$cookie]">BoxHelper/cookies/${domain[$n]}.json
-#        c=$(cat BoxHelper/cookies/${domain[$n]} | jq '.')
-#        $($c > BoxHelper/cookies/${domain[$n]}.json)
-#        $(rm -rf BoxHelper/cookies/${domain[$n]})
     fi
     echo -e " 请输入此页面筛选的种子最小体积, 单位为GB, -1 为不限制:"
     read -e -p " (默认: -1):" lower[$n]
@@ -405,13 +398,8 @@ edit_urls(){
 }
 add_url(){
 echo -e " 请输入要监听的种子页面:"
-if [ $n == 0 ]
-then
 read -e -p " (默认: 取消):" page
-else
-read -e -p " (默认: 停止添加):" page
-[[ -z "${page}" ]] && echo -e "停止添加监控页面..." && break
-fi
+[[ -z "${page}" ]] && echo -e "取消..." && exit 1
 domain=$(echo ${page} | awk -F'[/:]' '{print $4}')
 if [ -e BoxHelper/cookies/${domain}.json ]; then
 echo " 存有此站点的Cookie, 是否修改原Cookie？[y/n]:"
@@ -421,18 +409,12 @@ then
 echo " 请以Json格式输入此站点的Cookie:"
 read -e -d "]" -p  " (默认: 取消):"  cookie
 echo "$cookie]">BoxHelper/cookies/${domain}.json
-#c=$(cat BoxHelper/cookies/${domain} | jq '.')
-#$($c > BoxHelper/cookies/${domain}.json)
-#$(rm -rf BoxHelper/cookies/${domain})
 fi
 else
 echo " 请以Json格式输入此站点的Cookie:"
 read -e -d "]" -p  " (默认: 取消):"  cookie
 [[ -z "${cookie}]" ]] && echo -e "已取消..." && exit 1
 echo "$cookie]">BoxHelper/cookies/${domain}.json
-#c=$(cat BoxHelper/cookies/${domain} | jq '.')
-#$($c > BoxHelper/cookies/${domain}.json)
-#$(rm -rf BoxHelper/cookies/${domain})
 fi
 echo -e " 请输入此页面筛选的种子最小体积, 单位为GB, -1 为不限制:"
 read -e -p " (默认: -1):" lower
@@ -459,16 +441,18 @@ fi
 sed -i '/url_size_speed_cli/a\'\\t\[\""$page"\","$lower","$higher","\"$cli"\","$download","$upload","$load"\],'' BoxHelper/config.json
 }
 remove_url(){
-    echo -e " 请输入要删除的监听页面的 「序号」 :"
-    read -e -p " (默认: 取消):" page_num
-    [[ -z "${page_num}" ]] && echo -e "已取消..." && exit 1
-    if [ $page_num -lt $len ]; then
-        let page_num--
-        sed -i "/${array[$[page_num*7]]}/d" BoxHelper/config.json
-        sed -i '/url_size_speed_cli/a\'\\t\[\""$page"\","$lower","$higher","\"$cli"\","$download","$upload","$load"\],'' BoxHelper/config.json
-    else
-        echo "不存在这个页面, 取消 ..."  && exit 1
-    fi
+echo -e " 抱歉，暂时不支持脚本操作，请手动删除 BoxHelper/config.json 中的对应行，注意最后一行不要有逗号"
+#    echo -e " 请输入要删除的监听页面的 「序号」 :"
+#    read -e -p " (默认: 取消):" page_num
+#    [[ -z "${page_num}" ]] && echo -e "已取消..." && exit 1
+#    if [ $page_num -lt $len ]; then
+#        let page_num--
+#        domain=$(echo ${page} | awk -F'[/:]' '{print $4}')
+#        page=$(echo ${page} | awk -F'[/:]' '{print $5}')
+#        sed -i "/$domain\/$page/d" BoxHelper/config.json
+#    else
+#        echo "不存在这个页面, 取消 ..."  && exit 1
+#    fi
 }
 uninstall_boxhelper(){
     echo "正在关闭 BoxHelper ..."
@@ -481,7 +465,7 @@ uninstall_boxhelper(){
 start_boxhelper(){
     cd BoxHelper
     echo "正在从后台启动 BoxHelper, 日志文件为 BoxHelper/bh.log ..."
-    nohup java -jar BoxHelper.jar > bh.log 2>&1 &
+    java -jar BoxHelper.jar
 }
 
 stop_boxhelper(){
