@@ -14,7 +14,7 @@ install_boxhelper(){
     echo -e "开始下载 BoxHelper ..."
     rm -rf BoxHelper
     mkdir BoxHelper
-    wget --no-check-certificate -qO BoxHelper.jar https://github.com/SpereShelde/BoxHelper/raw/DE/BoxHelper.jar
+    wget --no-check-certificate -qO BoxHelper.jar https://raw.githubusercontent.com/SpereShelde/BoxHelper/master/BoxHelper.jar
     mv BoxHelper.jar BoxHelper
     touch BoxHelper/config.json
     mkdir BoxHelper/cookies
