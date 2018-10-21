@@ -68,7 +68,7 @@ add_config(){
     if  [ ! -n "$qb_url" ] ;then
     echo "不设置 qBittorrent ..."
     else
-    echo -e " 输入 qBittorrent WebUI 中Cookie的SID值："
+    echo -e " 输入 qBittorrent WebUI 的账号和密码，以-分隔，如admin-admin："
     read -e -p " (默认: 取消):" qb_sid
     if  [ ! -n "$qb_sid" ] ;then
     echo "已取消..." && exit 1
@@ -224,7 +224,7 @@ edit_boxhelper(){
     fi
     if [ $has_qb == true ]; then
     echo "  qBittorrent WebUI 地址        : $de_cfg_url"
-    echo "  qBittorrent WebUI SID        : $de_cfg_passwd"
+    echo "  qBittorrent WebUI 账号密码     : $de_cfg_passwd"
     echo "  qBittorrent 磁盘使用上限        : $de_cfg_total GB"
     echo "  qBittorrent 删种策略           : $de_cfg_action"
     #--!--#
@@ -280,7 +280,7 @@ edit_cli(){
     fi
     if [ $has_qb == true ]; then
     echo "  qBittorrent WebUI 地址        : $de_cfg_url"
-    echo "  qBittorrent WebUI SID        : $de_cfg_passwd"
+    echo "  qBittorrent WebUI 账号密码     : $de_cfg_passwd"
     echo "  qBittorrent 磁盘使用上限        : $de_cfg_total GB"
     echo "  qBittorrent 删种策略           : $de_cfg_action"
     #--!--#
@@ -342,7 +342,7 @@ read -e -p " (默认: 取消):" qb_url
 if  [ ! -n "$qb_url" ] ;then
 echo "已取消..." && exit 1
 else
-echo -e " 输入 qBittorrent WebUI 中Cookie的SID值："
+echo -e " 输入 qBittorrent WebUI 的账号密码，以-分隔，如admin-admin："
 read -e -p " (默认: 取消):" qb_sid
 if  [ ! -n "$qb_sid" ] ;then
 echo "已取消..." && exit 1
