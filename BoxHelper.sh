@@ -22,7 +22,7 @@ install_boxhelper(){
     if [[ ${jdk_status/"1.8"//} == $jdk_status ]]
     then
         echo "没有安装 JDK 1.8, 开始安装 ..."
-        wget --no-check-certificate -qO java.sh https://raw.githubusercontent.com/SpereShelde/Scripts/master/Java.sh
+        wget --no-check-certificate -qO java.sh https://raw.githubusercontent.com/SpereShelde/Scripts/master/java.sh
         chomod +x java.sh
         mv java.sh BoxHelper
         bash BoxHelper/java.sh
@@ -131,48 +131,49 @@ add_urls(){
     echo -e " 请输入要监听的种子页面:"
     if [ $n == 0 ]
     then
-        read -e -p " (默认: 取消):" page[$n]
-        [[ -z "${page[$n]}" ]] && echo -e "取消..." && exit 1
+    read -e -p " (默认: 取消):" page[$n]
+    [[ -z "${page[$n]}" ]] && echo -e "取消..." && exit 1
     else
-        read -e -p " (默认: 停止添加):" page[$n]
-        [[ -z "${page[$n]}" ]] && echo -e "停止添加监控页面..." && break
+    read -e -p " (默认: 停止添加):" page[$n]
+    [[ -z "${page[$n]}" ]] && echo -e "停止添加监控页面..." && break
     fi
-    domain[$n]=$(echo ${page[$n]} | awk -F'[/:]' '{print $4}')
-    if [ -e BoxHelper/cookies/${domain[$n]}.json ]; then
-        echo " 存有此站点的Cookie, 是否修改原Cookie？[y/n]:"
-        read -e edit
-        if [[ "${edit}" == [Yy] ]]
-        then
-            echo " 请以Json格式输入此站点的Cookie:"
-            read -e -d "]" -p  " (默认: 取消):"  cookie
-            echo "$cookie]">BoxHelper/cookies/${domain[$n]}.json
-        fi
-    else
-        echo " 请以Json格式输入此站点的Cookie:"
-        read -e -d "]" -p  " (默认: 取消):"  cookie
-        [[ -z "${cookie}]" ]] && echo -e "已取消..." && exit 1
-    fi
-    echo -e " 请输入此页面筛选的种子最小体积, 单位为GB, -1 为不限制:"
-    read -e -p " (默认: -1):" lower[$n]
-    [[ -z "${lower[$n]}" ]] && lower[$n]=-1
-    echo -e " 请输入此页面筛选的种子最大体积, 单位为GB, -1 为不限制:"
-    read -e -p " (默认: -1):" higher[$n]
-    [[ -z "${higher[$n]}" ]] && higher[$n]=-1
-    echo -e " 请输入下载此页面种子使用的客户端，qb，de:"
-    read -e -p " (默认: qb):" cli[$n]
-    [[ -z "${cli[$n]}" ]] && cli[$n]="qb"
-    echo -e " 请输入此页面下载的种子下载限速, 单位为MB/s, -1 为不限制:"
-    read -e -p " (默认: -1):" download[$n]
-    [[ -z "${download[$n]}" ]] && download[$n]=-1
-    echo -e " 请输入此页面下载的种子上传限速, 单位为MB/s, -1 为不限制:"
-    read -e -p " (默认: -1):" upload[$n]
-    [[ -z "${upload[$n]}" ]] && upload[$n]=-1
-    echo -e " 请输入是否加载此页面已存在的 Free 种[y/n]:"
-    read -e -p " (默认: n):" load[$n]
-    if [[ "${load[$n]}" == [Yy] ]]; then load[$n]=true
-    else
-    load[$n]=false
-    fi
+domain[$n]=$(echo ${page[$n]} | awk -F'[/:]' '{print $4}')
+if [ -e BoxHelper/cookies/${domain[$n]}.json ]; then
+echo " 存有此站点的Cookie, 是否修改原Cookie？[y/n]:"
+read -e edit
+if [[ "${edit}" == [Yy] ]]
+then
+echo " 请以Json格式输入此站点的Cookie:"
+read -e -d "]" -p  " (默认: 取消):"  cookie
+echo "${cookie}]">BoxHelper/cookies/${domain[$n]}.json
+fi
+else
+echo " 请以Json格式输入此站点的Cookie:"
+read -e -d "]" -p  " (默认: 取消):"  cookie
+[[ -z "${cookie}]" ]] && echo -e "已取消..." && exit 1
+echo "$cookie]">BoxHelper/cookies/${domain[$n]}.json
+fi
+echo -e " 请输入此页面筛选的种子最小体积, 单位为GB, -1 为不限制:"
+read -e -p " (默认: -1):" lower[$n]
+[[ -z "${lower[$n]}" ]] && lower[$n]=-1
+echo -e " 请输入此页面筛选的种子最大体积, 单位为GB, -1 为不限制:"
+read -e -p " (默认: -1):" higher[$n]
+[[ -z "${higher[$n]}" ]] && higher[$n]=-1
+echo -e " 请输入下载此页面种子使用的客户端，qb，de:"
+read -e -p " (默认: qb):" cli[$n]
+[[ -z "${cli[$n]}" ]] && cli[$n]="qb"
+echo -e " 请输入此页面下载的种子下载限速, 单位为MB/s, -1 为不限制:"
+read -e -p " (默认: -1):" download[$n]
+[[ -z "${download[$n]}" ]] && download[$n]=-1
+echo -e " 请输入此页面下载的种子上传限速, 单位为MB/s, -1 为不限制:"
+read -e -p " (默认: -1):" upload[$n]
+[[ -z "${upload[$n]}" ]] && upload[$n]=-1
+echo -e " 请输入是否加载此页面已存在的 Free 种[y/n]:"
+read -e -p " (默认: n):" load[$n]
+if [[ "${load[$n]}" == [Yy] ]]; then load[$n]=true
+else
+load[$n]=false
+fi
     let n++
     done
     let n--
