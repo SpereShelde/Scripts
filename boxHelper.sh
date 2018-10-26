@@ -143,12 +143,12 @@ echo " 存有此站点的Cookie, 是否修改原Cookie？[y/n]:"
 read -e edit
 if [[ "${edit}" == [Yy] ]]
 then
-echo " 请以Json格式输入此站点的Cookie:"
+echo " 请以Json格式输入此站点的Cookie, 无需回车:"
 read -e -d "]" -p  " (默认: 取消):"  cookie
 echo "${cookie}]">BoxHelper/cookies/${domain[$n]}.json
 fi
 else
-echo " 请以Json格式输入此站点的Cookie:"
+echo " 请以Json格式输入此站点的Cookie, 无需回车:"
 read -e -d "]" -p  " (默认: 取消):"  cookie
 [[ -z "${cookie}]" ]] && echo -e "已取消..." && exit 1
 echo "$cookie]">BoxHelper/cookies/${domain[$n]}.json
@@ -407,12 +407,12 @@ echo " 存有此站点的Cookie, 是否修改原Cookie？[y/n]:"
 read -e edit
 if [[ "${edit}" == [Yy] ]]
 then
-echo " 请以Json格式输入此站点的Cookie:"
+echo " 请以Json格式输入此站点的Cookie, 无需回车:"
 read -e -d "]" -p  " (默认: 取消):"  cookie
 echo "$cookie]">BoxHelper/cookies/${domain}.json
 fi
 else
-echo " 请以Json格式输入此站点的Cookie:"
+echo " 请以Json格式输入此站点的Cookie, 无需回车:"
 read -e -d "]" -p  " (默认: 取消):"  cookie
 [[ -z "${cookie}]" ]] && echo -e "已取消..." && exit 1
 echo "$cookie]">BoxHelper/cookies/${domain}.json
@@ -463,9 +463,14 @@ uninstall_boxhelper(){
     rm -rf BoxHelper
 }
 
+update_boxhelper(){
+    rm -rf BoxHelper/BoxHelper.jar
+    wget --no-check-certificate -qO BoxHelper.jar https://raw.githubusercontent.com/SpereShelde/BoxHelper/master/BoxHelper.jar
+    mv BoxHelper.jar BoxHelper
+}
+
 start_boxhelper(){
     cd BoxHelper
-    echo "正在从后台启动 BoxHelper, 日志文件为 BoxHelper/bh.log ..."
     java -jar BoxHelper.jar
 }
 
@@ -489,6 +494,8 @@ echo " # Author: SpereShelde                       #"
 echo " #############################################"
 
 echo -e "
+ ${Green_font_prefix} 0.${Font_color_suffix} 更新 BoxHelper
+ ————————————————————————
  ${Green_font_prefix} 1.${Font_color_suffix} 安装 BoxHelper
  ${Green_font_prefix} 2.${Font_color_suffix} 编辑 BoxHelper
  ${Green_font_prefix} 3.${Font_color_suffix} 卸载 BoxHelper
@@ -504,8 +511,11 @@ else
 	echo -e " 当前状态: BoxHelper ${Red_font_prefix}未启动${Font_color_suffix}"
 fi
 echo
-read -e -p " 请输入数字 [1-6]:" num
+read -e -p " 请输入数字 [0-6]:" num
 case "$num" in
+    0)
+    update_boxhelper
+    ;;
 	1)
 	install_boxhelper
 	;;
