@@ -30,6 +30,7 @@ install_boxhelper(){
     echo -e "开始编辑 BoxHelper 配置文件 ..."
     add_config
     start_boxhelper
+    source ~/.bashrc
 }
 add_config(){
     echo
@@ -117,7 +118,6 @@ add_config(){
         echo "\"qb_config\":[\"$qb_url\", \"$qb_sid\", $qb_total, \"$qb_action\", $qb_num],">>BoxHelper/config.json
     fi
     echo "\"url_size_speed_cli\":[">>BoxHelper/config.json
-    echo $urls
     echo "  $urls">>BoxHelper/config.json
     echo "],">>BoxHelper/config.json
     echo "\"cycle\":$cycle">>BoxHelper/config.json
@@ -170,7 +170,10 @@ read -e -p " (默认: -1):" upload[$n]
 [[ -z "${upload[$n]}" ]] && upload[$n]=-1
 echo -e " 请输入是否加载此页面已存在的 Free 种[y/n]:"
 read -e -p " (默认: n):" load[$n]
-if [[ "${load[$n]}" == [Yy] ]]; then load[$n]=true
+if [ ! -n "load[$n]" ];then
+load[$n]=false
+elif [[ "${load[$n]}" == [Yy] ]];then
+load[$n]=true
 else
 load[$n]=false
 fi
@@ -434,7 +437,10 @@ read -e -p " (默认: -1):" upload
 [[ -z "${upload}" ]] && upload=-1
 echo -e " 请输入是否加载此页面已存在的 Free 种[y/n]:"
 read -e -p " (默认: n):" load
-if [[ "${load}" == [Yy] ]]; then load=true
+if [ ! -n "load" ];then
+load=false
+elif [[ "${load}" == [Yy] ]];then
+load=true
 else
 load=false
 fi
@@ -467,9 +473,11 @@ update_boxhelper(){
     rm -rf BoxHelper/BoxHelper.jar
     wget --no-check-certificate -qO BoxHelper.jar https://raw.githubusercontent.com/SpereShelde/BoxHelper/master/BoxHelper.jar
     mv BoxHelper.jar BoxHelper
+    echo "BoxHelper 更新完成 ..."
 }
 
 start_boxhelper(){
+    source ~/.bashrc
     cd BoxHelper
     java -jar BoxHelper.jar
 }
