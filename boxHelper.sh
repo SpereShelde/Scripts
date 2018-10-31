@@ -23,7 +23,7 @@ install_boxhelper(){
     then
         echo "没有安装 JDK 1.8, 开始安装 ..."
         wget --no-check-certificate -qO java.sh https://raw.githubusercontent.com/SpereShelde/Scripts/master/java.sh
-        chomod +x java.sh
+        chmod +x java.sh
         mv java.sh BoxHelper
         bash BoxHelper/java.sh
     fi
@@ -89,6 +89,9 @@ add_config(){
     fi
     fi
 
+    echo -e " 请输入 BoxHelper 管辖的所有客户端内最大同时下载种子个数, 单位为秒:"
+    read -e -p " (默认: 20):" down_amount
+    [[ -z "$down_amount" ]] && down_amount=20
     echo -e " 请输入 BoxHelper 监听周期, 单位为秒:"
     read -e -p " (默认: 20):" cycle
     [[ -z "$cycle" ]] && cycle=20
@@ -117,6 +120,7 @@ add_config(){
     if  [ -n "$qb_url" ] ;then
         echo "\"qb_config\":[\"$qb_url\", \"$qb_sid\", $qb_total, \"$qb_action\", $qb_num],">>BoxHelper/config.json
     fi
+    echo "\"total_downloading_amount\":$down_amount,">>BoxHelper/config.json
     echo "\"url_size_speed_cli\":[">>BoxHelper/config.json
     echo "  $urls">>BoxHelper/config.json
     echo "],">>BoxHelper/config.json
@@ -202,6 +206,7 @@ get_config(){
     fi
     urls=$(cat BoxHelper/config.json | jq '.url_size_speed_cli[][]')
     cycle=$(cat BoxHelper/config.json | jq '.cycle')
+    amount=$(cat BoxHelper/config.json | jq '.total_downloading_amount')
     array=(${urls//'" "'/ })
     config_page_num=`echo $urls | grep -o '" "' |wc -l`
     let config_page_num++
@@ -234,6 +239,7 @@ edit_boxhelper(){
     #--!--#
     echo "  qBittorrent 删种个数           : $de_cfg_num 个"
     fi
+    echo "  BoxHelper 的最大下载个数        : $amount 个"
     echo "  BoxHelper 的监听周期           : $cycle 秒"
     i=0
     len=${#array[*]}
@@ -245,7 +251,8 @@ edit_boxhelper(){
     echo -e "
  ${Green_font_prefix} 1.${Font_color_suffix} 修改 BoxHelper 使用的客户端
  ${Green_font_prefix} 2.${Font_color_suffix} 修改 BoxHelper 的监听周期
- ${Green_font_prefix} 3.${Font_color_suffix} 修改 BoxHelper 的监听页面及相关限制" && echo
+ ${Green_font_prefix} 3.${Font_color_suffix} 修改 BoxHelper 的最大下载个数
+ ${Green_font_prefix} 4.${Font_color_suffix} 修改 BoxHelper 的监听页面及相关限制" && echo
     read -e -p " 请输入数字 [1-3]:" num
     case "$num" in
     	1)
@@ -255,10 +262,13 @@ edit_boxhelper(){
     	edit_cycle
     	;;
     	3)
-    	edit_urls
+    	edit_amount
+        ;;
+        4)
+        edit_urls
         ;;
     	*)
-    	echo " 请输入正确数字 [1-3]"
+    	echo " 请输入正确数字 [1-4]"
     	;;
     esac
     echo
@@ -269,6 +279,13 @@ edit_boxhelper(){
             exit 1
     fi
 
+}
+edit_amount(){
+echo
+echo -e " 修改 BoxHelper 的最大下载个数:"
+read -e -p " (默认: 取消):" amount
+[[ -z "$amount" ]] && echo "已取消..." && exit 1
+sed -i  's/\("total_downloading_amount":\).*/\1'"$amount"'/g'   BoxHelper/config.json
 }
 edit_cli(){
 
