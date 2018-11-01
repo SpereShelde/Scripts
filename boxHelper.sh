@@ -89,9 +89,9 @@ add_config(){
     fi
     fi
 
-    echo -e " 请输入 BoxHelper 管辖的所有客户端内最大同时下载种子个数, 单位为秒:"
-    read -e -p " (默认: 20):" down_amount
-    [[ -z "$down_amount" ]] && down_amount=20
+    echo -e " 请输入 BoxHelper 管辖的所有客户端内最大同时下载种子个数:"
+    read -e -p " (默认: 5):" down_amount
+    [[ -z "$down_amount" ]] && down_amount=5
     echo -e " 请输入 BoxHelper 监听周期, 单位为秒:"
     read -e -p " (默认: 20):" cycle
     [[ -z "$cycle" ]] && cycle=20
@@ -120,10 +120,11 @@ add_config(){
     if  [ -n "$qb_url" ] ;then
         echo "\"qb_config\":[\"$qb_url\", \"$qb_sid\", $qb_total, \"$qb_action\", $qb_num],">>BoxHelper/config.json
     fi
-    echo "\"total_downloading_amount\":$down_amount,">>BoxHelper/config.json
+
     echo "\"url_size_speed_cli\":[">>BoxHelper/config.json
     echo "  $urls">>BoxHelper/config.json
     echo "],">>BoxHelper/config.json
+    echo "\"total_downloading_amount\":$down_amount,">>BoxHelper/config.json
     echo "\"cycle\":$cycle">>BoxHelper/config.json
     echo "}">>BoxHelper/config.json
 
@@ -285,7 +286,7 @@ echo
 echo -e " 修改 BoxHelper 的最大下载个数:"
 read -e -p " (默认: 取消):" amount
 [[ -z "$amount" ]] && echo "已取消..." && exit 1
-sed -i  's/\("total_downloading_amount":\).*/\1'"$amount"'/g'   BoxHelper/config.json
+sed -i  's/\("total_downloading_amount":\).*/\1'"$amount,"'/g'   BoxHelper/config.json
 }
 edit_cli(){
 
