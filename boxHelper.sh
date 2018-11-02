@@ -2,7 +2,7 @@
 
 #=================================================
 #	Description: BoxHelper
-#	Version: 0.0.1
+#	Version: 1.0.0
 #	Author: SpereShelde
 #=================================================
 
@@ -89,6 +89,33 @@ add_config(){
     fi
     fi
 
+echo
+echo -e " 输入 Transmission 的 WebUI 地址："
+read -e -p " (默认: 不设置 Transmission):" tr_url
+
+if  [ ! -n "$tr_url" ] ;then
+echo "不设置 Transmission ..."
+else
+echo -e " 输入 Transmission WebUI 的账号和密码，以:分隔，如admin:admin："
+read -e -p " (默认: 取消):" tr_sid
+if  [ ! -n "$tr_sid" ] ;then
+echo "已取消..." && exit 1
+else
+echo -e " 输入 Transmission 中 BoxHelper 下载的种子体积和的上限，GB："
+read -e -p " (默认: 取消):" tr_total
+if  [ ! -n "$tr_total" ] ;then
+echo "已取消..." && exit 1
+else
+echo -e " 输入超出上述上限后的删种策略，slow，add，complete，active，small，large，ratio："
+read -e -p " (默认: large):" tr_action
+[[ -z "$tr_action" ]] && tr_action="large"
+echo -e " 请输入 BoxHelper 按照上述策略删除的种子个数:"
+read -e -p " (默认: 2):" tr_num
+[[ -z "$tr_num" ]] && tr_num=2
+fi
+fi
+fi
+
     echo -e " 请输入 BoxHelper 管辖的所有客户端内最大同时下载种子个数:"
     read -e -p " (默认: 5):" down_amount
     [[ -z "$down_amount" ]] && down_amount=5
@@ -119,6 +146,9 @@ add_config(){
     fi
     if  [ -n "$qb_url" ] ;then
         echo "\"qb_config\":[\"$qb_url\", \"$qb_sid\", $qb_total, \"$qb_action\", $qb_num],">>BoxHelper/config.json
+    fi
+    if  [ -n "$tr_url" ] ;then
+    echo "\"tr_config\":[\"$tr_url\", \"$tr_sid\", $tr_total, \"$tr_action\", $tr_num],">>BoxHelper/config.json
     fi
 
     echo "\"url_size_speed_cli\":[">>BoxHelper/config.json
@@ -189,6 +219,7 @@ fi
 get_config(){
     has_de=$(cat BoxHelper/config.json | jq 'has("de_config")')
     has_qb=$(cat BoxHelper/config.json | jq 'has("qb_config")')
+    has_tr=$(cat BoxHelper/config.json | jq 'has("tr_config")')
     if [ $has_de == true ]; then
         de_config=$(cat BoxHelper/config.json | jq '.de_config[]')
         de_cfg_url=$(echo ${de_config} | awk -F' ' '{print $1}')
@@ -205,6 +236,14 @@ get_config(){
         qb_cfg_action=$(echo ${qb_config} | awk -F' ' '{print $4}')
         qb_cfg_num=$(echo ${qb_config} | awk -F' ' '{print $5}')
     fi
+if [ $has_tr == true ]; then
+tr_config=$(cat BoxHelper/config.json | jq '.tr_config[]')
+tr_cfg_url=$(echo ${tr_config} | awk -F' ' '{print $1}')
+tr_cfg_passwd=$(echo ${tr_config} | awk -F' ' '{print $2}')
+tr_cfg_total=$(echo ${tr_config} | awk -F' ' '{print $3}')
+tr_cfg_action=$(echo ${tr_config} | awk -F' ' '{print $4}')
+tr_cfg_num=$(echo ${tr_config} | awk -F' ' '{print $5}')
+fi
     urls=$(cat BoxHelper/config.json | jq '.url_size_speed_cli[][]')
     cycle=$(cat BoxHelper/config.json | jq '.cycle')
     amount=$(cat BoxHelper/config.json | jq '.total_downloading_amount')
@@ -229,7 +268,6 @@ edit_boxhelper(){
     echo "  Deluge WebUI 登录密码          : $de_cfg_passwd"
     echo "  Deluge 磁盘使用上限             : $de_cfg_total GB"
     echo "  Deluge 删种策略                : $de_cfg_action"
-    #--!--#
     echo "  Deluge 删种个数                : $de_cfg_num 个"
     fi
     if [ $has_qb == true ]; then
@@ -237,9 +275,16 @@ edit_boxhelper(){
     echo "  qBittorrent WebUI 账号密码     : $de_cfg_passwd"
     echo "  qBittorrent 磁盘使用上限        : $de_cfg_total GB"
     echo "  qBittorrent 删种策略           : $de_cfg_action"
-    #--!--#
     echo "  qBittorrent 删种个数           : $de_cfg_num 个"
     fi
+    if [ $has_tr == true ]; then
+    echo "  Transmission WebUI 地址       : $tr_cfg_url"
+    echo "  Transmission WebUI 账号密码    : $tr_cfg_passwd"
+    echo "  Transmission 磁盘使用上限       : $tr_cfg_total GB"
+    echo "  Transmission 删种策略          : $tr_cfg_action"
+    echo "  Transmission 删种个数          : $tr_cfg_num 个"
+    fi
+
     echo "  BoxHelper 的最大下载个数        : $amount 个"
     echo "  BoxHelper 的监听周期           : $cycle 秒"
     i=0
@@ -308,6 +353,13 @@ edit_cli(){
     #--!--#
     echo "  qBittorrent 删种个数           : $de_cfg_num 个"
     fi
+if [ $has_tr == true ]; then
+echo "  Transmission WebUI 地址       : $tr_cfg_url"
+echo "  Transmission WebUI 账号密码    : $tr_cfg_passwd"
+echo "  Transmission 磁盘使用上限       : $tr_cfg_total GB"
+echo "  Transmission 删种策略          : $tr_cfg_action"
+echo "  Transmission 删种个数          : $tr_cfg_num 个"
+fi
 
     echo
     if [ $has_de == true ]; then
@@ -316,7 +368,10 @@ edit_cli(){
     if [ $has_qb == true ]; then
         echo -e " ${Green_font_prefix} 2.${Font_color_suffix} 修改 qBittorrent 相关配置"
     fi
-    read -e -p " 请输入数字 [1-2]:" num
+if [ $has_tr == true ]; then
+echo -e " ${Green_font_prefix} 3.${Font_color_suffix} 修改 Transmission 相关配置"
+fi
+    read -e -p " 请输入数字 [1-3]:" num
     case "$num" in
     1)
     edit_de
@@ -324,8 +379,11 @@ edit_cli(){
     2)
     edit_qb
     ;;
+3)
+edit_tr
+;;
     *)
-    echo " 请输入正确数字 [1-2]"
+    echo " 请输入正确数字 [1-3]"
     ;;
     esac
 }
@@ -384,6 +442,34 @@ fi
 fi
 fi
 sed -i 's/\("qb_config":\["\).*/\1'"$qb_url"\","\"$qb_sid"\","$qb_total","\"$qb_action"\","$qb_num"\],'/g'   BoxHelper/config.json
+}
+edit_tr(){
+echo
+echo -e " 输入 Transmission 的 WebUI 地址："
+read -e -p " (默认: 取消):" tr_url
+if  [ ! -n "$tr_url" ] ;then
+echo "已取消..." && exit 1
+else
+echo -e " 输入 Transmission WebUI 的账号密码，以:分隔，如admin:admin："
+read -e -p " (默认: 取消):" tr_sid
+if  [ ! -n "$tr_sid" ] ;then
+echo "已取消..." && exit 1
+else
+echo -e " 输入 Transmission 中 BoxHelper 下载的种子体积和的上限，GB："
+read -e -p " (默认: 取消):" tr_total
+if  [ ! -n "$tr_total" ] ;then
+echo "已取消..." && exit 1
+else
+echo -e " 输入超出上述上限后的删种策略，slow，add，complete，active，small，large，ratio："
+read -e -p " (默认: large):" tr_action
+[[ -z "$tr_action" ]] && tr_action="large"
+echo -e " 请输入 BoxHelper 按照上述策略删除的种子个数:"
+read -e -p " (默认: 2):" tr_num
+[[ -z "$tr_num" ]] && tr_num=2
+fi
+fi
+fi
+sed -i 's/\("tr_config":\["\).*/\1'"$tr_url"\","\"$tr_passwd"\","$tr_total","\"$tr_action"\","$tr_num"\],'/g'   BoxHelper/config.json
 }
 edit_cycle(){
     echo
