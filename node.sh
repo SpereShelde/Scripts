@@ -3,11 +3,9 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 clear
 # wget -N --no-check-certificate "https://raw.githubusercontent.com/SpereShelde/Scripts/master/node.sh" && bash node.sh
-echo
-echo "############################"
-echo "# Author: SpereSheldd      #"
-echo "############################"
-echo
+
+wget --no-check-certificate -qO /tmp/appex.sh "https://raw.githubusercontent.com/SpereShelde/serverSpeeder_Install/master/appex.sh" && bash /tmp/appex.sh install '4.4.0-47-generic'
+
 read -p "请输入此节点的ID: " nodeid
 read -p "请输入面板域名: " host
 read -p "请输入验证密钥: " pass
@@ -47,8 +45,8 @@ SPEEDTEST = 0
 CLOUDSAFE = 1
 ANTISSATTACK = 0
 AUTOEXEC = 0
-MU_SUFFIX = ${suffix}
-MU_REGEX = ${prefix}
+MU_SUFFIX = '${suffix}'
+MU_REGEX = '${prefix}'
 SERVER_PUB_ADDR = '127.0.0.1'  # mujson_mgr need this to generate ssr link
 API_INTERFACE = 'modwebapi'  # glzjinmod, modwebapi
 WEBAPI_URL = '${host}'
