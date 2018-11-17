@@ -2,6 +2,7 @@
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 clear
+# wget -N --no-check-certificate "https://raw.githubusercontent.com/SpereShelde/Scripts/master/node.sh" && bash node.sh
 echo
 echo "############################"
 echo "# Author: SpereSheldd      #"
