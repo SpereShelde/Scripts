@@ -2,7 +2,6 @@
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 clear
-# wget -N --no-check-certificate "https://raw.githubusercontent.com/SpereShelde/Scripts/master/node.sh" && bash node.sh
 
 wget --no-check-certificate -qO /tmp/appex.sh "https://raw.githubusercontent.com/0oVicero0/serverSpeeder_Install/master/appex.sh" && bash /tmp/appex.sh install '4.4.0-47-generic'
 
