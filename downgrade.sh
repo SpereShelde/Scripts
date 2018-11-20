@@ -3,6 +3,8 @@
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 
+apt install linux-image-3.16.0-4-amd64
+
 KernelList="$(dpkg -l |grep 'linux-image' |awk '{print $2}')"
 [ -z "$(echo $KernelList |grep -o linux-image-3.16.0-4-amd64)" ] && echo "Install error." && exit 1
 for KernelTMP in `echo "$KernelList"`
