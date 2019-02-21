@@ -92,3 +92,4 @@ supervisorctl restart ssr
 
 echo "对接完成!"
 echo "查看日志:supervisorctl tail -f ssr stderr"
+
